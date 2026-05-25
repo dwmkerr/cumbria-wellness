@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Local Yoga — near Levens, South Lakes</title>
+<style>
+  :root{
+    --green:#2e7d32; --green-bg:#e6f4ea; --green-bd:#9bce9f;
+    --amber:#b06a00; --amber-bg:#fff4e0; --amber-bd:#e6c389;
+    --ink:#1f2933; --muted:#62707d; --line:#dfe4ea; --gutter:58px;
+    --pxmin:1.05; --start:420;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.4 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:#f7f9fb}
+  header{padding:18px 22px 10px}
+  h1{margin:0 0 4px;font-size:20px}
+  .sub{color:var(--muted);font-size:13px}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin:12px 0 4px;font-size:12.5px;align-items:center}
+  .chip{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:12px;height:12px;border-radius:3px;border:1px solid}
+  .dot.g{background:var(--green-bg);border-color:var(--green-bd)}
+  .dot.a{background:var(--amber-bg);border-color:var(--amber-bd)}
+  .cal{margin:8px 14px 28px;background:#fff;border:1px solid var(--line);border-radius:10px;overflow-x:auto;overflow-y:hidden}
+  .head{display:flex;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:5;width:max-content}
+  .head .cell{flex:0 0 auto;padding:9px 6px;text-align:center;font-weight:600;font-size:13px;border-left:1px solid var(--line)}
+  .head .corner{flex:0 0 var(--gutter);border-left:none;position:sticky;left:0;background:#fff;z-index:6}
+  .head .wk{color:var(--muted);font-weight:500;font-size:11px}
+  .body{display:flex;position:relative;width:max-content}
+  .gutter{flex:0 0 var(--gutter);position:sticky;left:0;background:#fff;z-index:3;box-shadow:1px 0 0 var(--line)}
+  .gutter .t{position:absolute;right:6px;transform:translateY(-50%);font-size:11px;color:var(--muted)}
+  .day{flex:0 0 auto;position:relative;border-left:1px solid var(--line)}
+  .hr{position:absolute;left:0;right:0;border-top:1px solid var(--line)}
+  .hr.half{border-top:1px dashed #eef1f4}
+  .ev{position:absolute;border-radius:6px;padding:3px 6px;overflow:hidden;border:1px solid;font-size:11.5px;line-height:1.2;text-decoration:none;color:inherit;cursor:pointer}
+  .ev:hover{filter:brightness(0.97);box-shadow:0 1px 4px rgba(0,0,0,.12);z-index:4}
+  .ev.g{background:var(--green-bg);border-color:var(--green-bd)}
+  .ev.a{background:var(--amber-bg);border-color:var(--amber-bd)}
+  .ev .ti{font-weight:600;display:block}
+  .ev .pr{color:var(--muted);display:block;font-size:10.5px}
+  .ev .loc{color:var(--muted);display:block;font-size:10px;font-style:italic}
+  .ev .on{font-size:10px;font-weight:600;color:#3b6fb0}
+  .ev.star::before{content:"★ ";color:#d39e00}
+  footer{margin:0 16px 30px;color:var(--muted);font-size:12px}
+  footer a{color:#3b6fb0}
+  /* modal */
+  .ov{position:fixed;inset:0;background:rgba(20,28,38,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+  .ov.open{display:flex}
+  .modal{background:#fff;border-radius:12px;max-width:440px;width:100%;padding:20px 22px;box-shadow:0 12px 40px rgba(0,0,0,.25);position:relative}
+  .modal h2{margin:0 6px 2px 0;font-size:18px;padding-right:24px}
+  .modal .badge{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:10px;border:1px solid;margin-bottom:8px}
+  .modal .badge.g{background:var(--green-bg);border-color:var(--green-bd);color:var(--green)}
+  .modal .badge.a{background:var(--amber-bg);border-color:var(--amber-bd);color:var(--amber)}
+  .modal .row{margin:8px 0;font-size:13.5px}
+  .modal .lbl{color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;display:block;margin-bottom:1px}
+  .modal .desc{font-size:13px;color:#33404d;margin-top:10px;line-height:1.45}
+  .modal a{color:#3b6fb0;text-decoration:none}
+  .modal a:hover{text-decoration:underline}
+  .modal .links{margin-top:12px;display:flex;gap:14px;flex-wrap:wrap;font-weight:600;font-size:13px}
+  .x{position:absolute;top:12px;right:14px;border:none;background:none;font-size:22px;line-height:1;color:var(--muted);cursor:pointer}
+  @media (max-width:760px){
+    .sub{font-size:12px}
+    .ev{font-size:10px;padding:2px 4px}
+    .ev .pr,.ev .loc{font-size:9px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Local Yoga — near Levens, South Lakes</h1>
+  <div class="sub">Weekly schedule of regular classes. <b>Click any class</b> for venue, map, website & details. Browser-verified May 2026.</div>
+  <div class="legend">
+    <span class="chip"><span class="dot g"></span> Green — confirmed (official live timetable)</span>
+    <span class="chip"><span class="dot a"></span> Amber — verify first (stale / FB-only / paused)</span>
+    <span class="chip">★ closest to Levens &nbsp;·&nbsp; ◷ online</span>
+  </div>
+</header>
+
+<div class="cal">
+  <div class="head" id="head"></div>
+  <div class="body" id="body"></div>
+</div>
+
+<footer>
+  A simple public index of yoga near Levens / the South Lakes. Times change — confirm with the studio.
+  Amber items &amp; phone-only gaps (Low Wood Bay, Stride&amp;Edge, exact leisure-centre times) still need confirming.
+</footer>
+
+<div class="ov" id="ov">
+  <div class="modal" id="modal">
+    <button class="x" id="x" aria-label="Close">&times;</button>
+    <div id="mbody"></div>
+  </div>
+</div>
+
+<script>
+const DAY_START=420, DAY_END=1260, PXMIN=1.05;   // 07:00–21:00
+const days=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+
+// ---- Provider metadata (used by the click popup) ----
+// key MUST match the provider field in each event below.
+const META={
+ "Mountain Yoga":{site:"https://mountainyoga.uk/",addr:"Venues: Leasgill Athenaeum / Crosthwaite Hall / Fellside Centre / Synergy Health, Kendal",gq:"Leasgill Athenaeum",desc:"Viniyoga & therapeutic yoga with Imogen Field. Closest to Levens (Leasgill). Book ahead — some classes full. No prices online."},
+ "Kendal Leisure":{site:"https://www.better.org.uk/leisure-centre/westmorland-and-furness/kendal/timetable/fitness-classes",addr:"Kendal Leisure Centre, Burton Rd, Kendal LA9 7HX (Studio 2)",gq:"Kendal Leisure Centre",desc:"Council leisure-centre yoga, pay-as-you-go (~£5.85). Timetable changes weekly — check the Better app."},
+ "Yogasapien":{site:"https://www.yogasapien.co.uk/yoga-classes-and-1-to-1-s",addr:"Westmorland CrossFit, Castle Mills, Aynam Rd, Kendal LA9 7DE; + Kendal Squash Club",gq:"Westmorland CrossFit Kendal",desc:"Mindful/gentle yoga with Jacqueline Wallace (20+ yrs). £12 drop-in / £60 block, booking essential."},
+ "Proper Northern":{site:"https://propernorthernyoga.com/",addr:"Kendal United Reformed Church (front blue door), Kendal",gq:"Kendal United Reformed Church",desc:"Embodied yoga (Hatha/Vinyasa/Yin) with Hannah Glancy. Foundations + Develop levels. £12 drop-in, Gymcatch booking."},
+ "Hot Yoga Cumbria":{site:"https://hotyogacumbria.com/",addr:"1 Spring Howe, Skelsmergh, Kendal LA9 6NU",gq:"Spring Howe Skelsmergh Kendal",desc:"Ghosh-lineage hot yoga (40°C, 75 min, fixed sequence). Term-time. £15 drop-in. On-site natural cool-down pool."},
+ "Tracy Dixon":{site:"https://www.tracydixonmindandbodyfit.com/yoga",addr:"The First Place, Kirkland, Kendal LA9 5AF",gq:"The First Place Kirkland Kendal",desc:"Mixed-ability yoga (good for runners/active people) with Tracy Dixon. £6 pay-as-you-go, text to book."},
+ "Yoga in the Park":{site:"https://www.integratinghealth.com/yoga-in-the-park-kendal",addr:"Fletcher Park, Kendal (near the Castle) — outdoors",gq:"Fletcher Park Kendal",desc:"Outdoor all-abilities yoga year-round with Alison Marsden. £8 drop-in / £39 for 6 weeks."},
+ "Innominate":{site:"https://innominateyoga.my.canva.site/",addr:"Online (Zoom); also Kendal Leisure Centre",gq:"Kendal Leisure Centre",desc:"Hatha, Scaravelli-inspired, chair & restorative yoga with Gary Williams. Online Zoom classes — practise from home."},
+ "Balance Studio":{site:"https://pilates-yoga-lakedistrict.co.uk/studio-classes/",addr:"Balance Studio, Staveley Mill Yard, Staveley LA8 9LR",gq:"Balance Studio Staveley Mill Yard",desc:"Kundalini, yoga, slow-flow+yin & pilates with Rebecca Edwards. All studio classes streamed live on Zoom. Daily 7:15am Kundalini online."},
+ "Katie Shaw":{site:"https://www.ksyoga.co.uk/",addr:"The Studio, Holker School, Cark in Cartmel LA11 7PQ (+ online)",gq:"Holker School Cark in Cartmel",desc:"Vinyasa, Yin & rehab-informed yoga + pilates with Katie Shaw (soft-tissue therapist). £15–16, passes available. Online booking."},
+ "Shelley Osman":{site:"https://www.shelleyosman.com/yoga",addr:"The Chamber Room, Victoria Hall, Main St, Grange-over-Sands LA11 6DP",gq:"Victoria Hall Grange-over-Sands",desc:"Ashtanga (Mysore self-practice) + Yoga For All (Hatha+Yin). Only authorised Ashtanga teacher in Cumbria. Often full — email to enquire."},
+ "Spacious Minds":{site:"https://www.yogahub.co.uk/yoga-teachers/spacious-minds-mindful-yoga/",addr:"Victoria Hall, Grange-over-Sands LA11 6DP; High Newton Village Hall; + Zoom",gq:"Victoria Hall Grange-over-Sands",desc:"Gentle/mindful Hatha + chair yoga with Tracey Fielding. All ages/abilities. Contact to book."},
+ "My Wild Soul":{site:"https://mywildsoul.co.uk/",addr:"Victoria Hall, Grange-over-Sands LA11 6DP (Age UK chair yoga)",gq:"Victoria Hall Grange-over-Sands",desc:"Accessible / chair / nature-based yoga with Allie. Grange Monday class is chair yoga via Age UK. 5.0 on Google."},
+ "Lakes Yoga":{site:"https://lakesyoga.co.uk/",addr:"Rayrigg Farm, Studio D, Windermere LA23 1BW (lakeside)",gq:"Rayrigg Farm Windermere LA23 1BW",desc:"Varied 90-min all-levels classes (asana, qigong, Yoga Nidra) with Carly. £18 drop-in, pre-book (often full)."},
+ "Langdale":{site:"https://www.langdale.co.uk/exercise-fitness/",addr:"The Langdale Estate, Great Langdale, nr Ambleside LA22 9JD",gq:"The Langdale Estate Great Langdale",desc:"Slow Flow Yoga in the leisure studio. £6 (free for members), non-residents welcome. Book 015394 38055."},
+ "SOMA":{site:"https://www.somawellbeing.org.uk/",addr:"Harper Mill, White Cross Business Park, Lancaster LA1 4XQ",gq:"SOMA Wellbeing Harper Mill Lancaster",desc:"Boutique studio, ~25 classes/week (Vinyasa, Ashtanga, Yin, Slow Flow + Pilates), 7 days. Intro 21 days £40. TeamUp booking. Furthest, but most choice."},
+ "Northern Calm":{site:"https://northerncalm.co.uk/",addr:"Paries House, Casterton, Carnforth LA6 2RZ",gq:"Paries House Casterton Carnforth",desc:"Dynamic Flow, Soft Yoga + a dedicated Men's Yoga class with Laura. £8 drop-in. ⚠️ Timetable captured indirectly — confirm current term."},
+ "Gentle Yoga w/ Jo":{site:"https://www.arnsidevillage.co.uk/directory/gentle-yoga-class/",addr:"Arnside W.I. Hall, Orchard Rd, Arnside LA5 0DP; also Storth & Holme",gq:"Arnside WI Hall Orchard Road",desc:"Gentle Hatha, props provided, weekly pay-as-you-go (£7–8) with Jo. ⚠️ Timetable from a 2024 flyer — confirm term (07760 863318)."},
+ "Cathy Lubelska":{site:"https://www.arnsidevillage.co.uk/directory/yoga-for-all/",addr:"Arnside W.I. Hall, Orchard Rd, Arnside LA5 0DP",gq:"Arnside WI Hall Orchard Road",desc:"All-levels community class with Cathy Lubelska. ⚠️ No price/date published — phone 015395 34377 to confirm."},
+ "Stride & Edge":{site:"https://www.strideandedge.co.uk/",addr:"Windermere Jetty Museum, Rayrigg Rd, Bowness LA23 1BN (lakeside boathouse); Fri @ Staveley",gq:"Windermere Jetty Museum",desc:"Vinyasa 'Yoga by the Lake' with Harry & Maddy, in the lakeside boathouse. ⚠️ Booking calendar empty 6 months — likely paused; email first."},
+ "Mindful Yoga & Shiatsu":{site:"https://www.yoga-shiatsu.co/",addr:"Arkholme Village Hall, Arkholme LA6 1AT",gq:"Arkholme Village Hall",desc:"Dr Zoë Pirie — now mainly Chi Gong/Qigong (1st Saturday/month). ⚠️ Old site dead; organised via the Around Kirkby Lonsdale Facebook group."},
+ "One Exhale":{site:"https://oneexhale.co.uk/",addr:"Esthwaite Boat House Cafe, Ridding Wood, Hawkshead LA22 0QF (Esthwaite Water)",gq:"Esthwaite Boat House Cafe Hawkshead",desc:"Outdoor 'boathouse' yoga with Kirsty on Esthwaite Water. Mon/Sat/Sun 8–9am, launching 9 May 2026. (This is the 'boat house' class — teacher is Kirsty, not Sally.)"}
+};
+
+// ---- Events: [day, "start","end", title, provider, "g"|"a", drive/loc, flags] ----
+const ev=[
+ // MONDAY
+ [0,"07:15","07:45","Kundalini","Balance Studio","g","online","◷"],
+ [0,"08:00","09:00","Boathouse Outdoor","One Exhale","g","Esthwaite ~40m",""],
+ [0,"09:15","10:00","Outdoor flow","Yoga in the Park","g","Kendal ~13m",""],
+ [0,"10:00","11:00","Healthy Bones","Mountain Yoga","g","Kendal ~13m",""],
+ [0,"11:15","12:15","Healthy Bones","Mountain Yoga","g","Kendal ~13m",""],
+ [0,"10:00","11:15","Hot yoga","Hot Yoga Cumbria","g","Skelsmergh ~18m",""],
+ [0,"11:00","12:00","Chair yoga","My Wild Soul","g","Grange ~18m",""],
+ [0,"16:30","17:30","Mindful","Spacious Minds","g","online","◷"],
+ [0,"17:15","18:15","Yoga","Balance Studio","g","Staveley ~22m",""],
+ [0,"17:45","18:55","Foundations","Proper Northern","g","Kendal ~13m",""],
+ [0,"18:00","19:30","Varied 90m","Lakes Yoga","g","Windermere ~20m",""],
+ [0,"18:00","19:15","Mindful","Yogasapien","g","Kendal ~13m",""],
+ [0,"18:30","19:15","Mixed","Tracy Dixon","g","Kendal ~13m",""],
+ [0,"18:30","20:00","Ashtanga","Shelley Osman","g","Grange ~18m",""],
+ [0,"19:00","20:10","Develop","Proper Northern","g","Kendal ~13m",""],
+ [0,"19:00","19:50","Slow Flow","Langdale","g","Ambleside ~40m",""],
+ [0,"10:00","11:00","Vinyasa Flow","SOMA","g","Lancaster ~32m",""],
+ [0,"18:00","19:00","Dynamic Vinyasa","SOMA","g","Lancaster ~32m",""],
+ [0,"19:15","20:15","Embodied Yin","SOMA","g","Lancaster ~32m",""],
+ // TUESDAY
+ [1,"07:15","07:45","Kundalini","Balance Studio","g","online","◷"],
+ [1,"07:30","08:30","Ashtanga Style","SOMA","g","Lancaster ~32m",""],
+ [1,"09:15","10:15","Hatha/Restorative","Innominate","g","online","◷"],
+ [1,"10:00","11:30","Mixed level","Mountain Yoga","g","Leasgill ~5m","★"],
+ [1,"10:00","11:00","Gentle Hatha","Gentle Yoga w/ Jo","a","Arnside ~15m",""],
+ [1,"10:00","11:00","Yoga for All","Cathy Lubelska","a","Arnside ~15m",""],
+ [1,"09:45","11:00","Gentle","Yogasapien","g","Kendal ~13m",""],
+ [1,"10:00","11:00","Yang Yin","SOMA","g","Lancaster ~32m",""],
+ [1,"16:30","17:45","Mindful","Yogasapien","g","Kendal ~13m",""],
+ [1,"17:30","18:30","Yogalates","SOMA","g","Lancaster ~32m",""],
+ [1,"17:45","18:45","Soft Yoga","Northern Calm","a","Casterton ~22m",""],
+ [1,"18:00","19:30","Varied 90m","Lakes Yoga","g","Windermere ~20m",""],
+ [1,"18:15","19:30","Mindful","Yogasapien","g","Kendal ~13m",""],
+ [1,"18:30","19:30","Seasonal Yoga","SOMA","g","Lancaster ~32m",""],
+ [1,"19:00","20:00","Dynamic Flow","Northern Calm","a","Casterton ~22m",""],
+ [1,"19:15","20:30","Hot yoga","Hot Yoga Cumbria","g","Skelsmergh ~18m",""],
+ // WEDNESDAY
+ [2,"07:15","07:45","Kundalini","Balance Studio","g","online","◷"],
+ [2,"07:00","08:00","SOMA Session","SOMA","g","Lancaster ~32m",""],
+ [2,"07:00","07:50","Yoga","Kendal Leisure","g","Kendal ~13m",""],
+ [2,"09:00","10:00","Gentle Yoga","Gentle Yoga w/ Jo","a","Storth ~10m",""],
+ [2,"09:10","10:10","Move & Breathe","Katie Shaw","g","Cark ~25m",""],
+ [2,"10:00","11:15","Hot yoga","Hot Yoga Cumbria","g","Skelsmergh ~18m",""],
+ [2,"10:00","11:30","Varied 90m","Lakes Yoga","g","Windermere ~20m",""],
+ [2,"10:30","12:00","Mixed level","Mountain Yoga","g","Kendal ~13m",""],
+ [2,"17:15","17:55","Slow Flow+Yin","Balance Studio","g","online","◷"],
+ [2,"18:00","19:00","Awakening Flow","SOMA","g","Lancaster ~32m",""],
+ [2,"18:30","20:00","General Hatha","Gentle Yoga w/ Jo","a","Holme ~12m",""],
+ [2,"18:30","20:00","Hatha/Restorative","Innominate","g","online","◷"],
+ [2,"19:00","20:00","Mindful","Spacious Minds","g","online","◷"],
+ [2,"19:00","20:30","Viniyoga","Mountain Yoga","g","Crosthwaite ~12m",""],
+ [2,"19:15","20:15","Embodied Yin","SOMA","g","Lancaster ~32m",""],
+ // THURSDAY
+ [3,"07:15","07:45","Kundalini","Balance Studio","g","online","◷"],
+ [3,"09:00","10:00","Vinyasa Flow","Katie Shaw","g","Cark ~25m",""],
+ [3,"09:10","10:00","Yoga Basics","Kendal Leisure","g","Kendal ~13m",""],
+ [3,"09:30","10:30","Soft Yoga","Northern Calm","a","Casterton ~22m",""],
+ [3,"09:45","11:15","Mindful Yoga","Spacious Minds","g","Grange ~18m",""],
+ [3,"11:30","12:30","Gentle Chair","Spacious Minds","g","Grange ~18m",""],
+ [3,"18:00","19:30","General Hatha","Gentle Yoga w/ Jo","a","Storth ~10m",""],
+ [3,"18:15","19:15","Yoga","Balance Studio","g","Staveley ~22m",""],
+ [3,"19:00","20:30","Yoga For All","Shelley Osman","g","Grange ~18m",""],
+ [3,"19:05","20:05","Yoga","Kendal Leisure","g","Kendal ~13m",""],
+ [3,"19:15","20:15","Vinyasa Flow","SOMA","g","Lancaster ~32m",""],
+ [3,"19:30","20:30","Men's Yoga","Northern Calm","a","Casterton ~22m",""],
+ // FRIDAY
+ [4,"07:15","07:45","Kundalini","Balance Studio","g","online","◷"],
+ [4,"08:00","08:45","Vinyasa","Stride & Edge","a","Staveley ~18m",""],
+ [4,"09:15","10:15","Dynamic Flow","Northern Calm","a","Casterton ~22m",""],
+ [4,"09:30","11:00","Varied 90m","Lakes Yoga","g","Windermere ~20m",""],
+ [4,"10:00","11:00","Move & Breathe","Katie Shaw","g","Cark ~25m",""],
+ [4,"10:00","11:00","Flow Yin","SOMA","g","Lancaster ~32m",""],
+ [4,"10:00","11:30","Mindful Yoga","Spacious Minds","g","High Newton ~15m",""],
+ [4,"17:00","17:50","Slow Flow","Langdale","g","Ambleside ~40m",""],
+ [4,"17:45","18:30","Yoga","Kendal Leisure","g","Kendal ~13m",""],
+ [4,"18:30","19:30","Slow Flow","SOMA","g","Lancaster ~32m",""],
+ // SATURDAY
+ [5,"08:00","09:00","Boathouse Outdoor","One Exhale","g","Esthwaite ~40m",""],
+ [5,"09:15","10:15","Ashtanga Style","SOMA","g","Lancaster ~32m",""],
+ [5,"09:30","10:30","Yoga by the Lake","Stride & Edge","a","Bowness ~20m",""],
+ [5,"10:30","12:30","Chi Gong (1st Sat)","Mindful Yoga & Shiatsu","a","Arkholme ~25m",""],
+ // SUNDAY
+ [6,"08:00","09:00","Boathouse Outdoor","One Exhale","g","Esthwaite ~40m",""],
+ [6,"10:00","11:00","Sunday Reset","SOMA","g","Lancaster ~32m",""],
+ [6,"11:15","12:15","Dynamic Vinyasa","SOMA","g","Lancaster ~32m",""],
+ [6,"17:00","18:00","Yang to Yin","SOMA","g","Lancaster ~32m",""],
+];
+
+const m=s=>{const[a,b]=s.split(":").map(Number);return a*60+b};
+const yPos=mn=>(mn-DAY_START)*PXMIN;
+const H=(DAY_END-DAY_START)*PXMIN;
+const SUBW=150, DAYMIN=170;
+const fmtLoc=s=>s.replace(/~(\d+)m/,"$1 min");
+
+function place(es){
+  let i=0,maxN=1;
+  while(i<es.length){
+    let cluster=[es[i]],maxEnd=es[i].e,j=i+1;
+    while(j<es.length && es[j].s<maxEnd){cluster.push(es[j]);maxEnd=Math.max(maxEnd,es[j].e);j++;}
+    let colEnds=[];
+    cluster.forEach(c=>{
+      let placed=false;
+      for(let k=0;k<colEnds.length;k++){if(colEnds[k]<=c.s){c.col=k;colEnds[k]=c.e;placed=true;break;}}
+      if(!placed){c.col=colEnds.length;colEnds.push(c.e);}
+    });
+    cluster.forEach(c=>c.n=colEnds.length);
+    maxN=Math.max(maxN,colEnds.length);
+    i=j;
+  }
+  return maxN;
+}
+
+const dayData=[];
+for(let d=0;d<7;d++){
+  const es=ev.filter(e=>e[0]===d).map(e=>({s:m(e[1]),e:m(e[2]),raw:e})).sort((a,b)=>a.s-b.s||b.e-a.e);
+  const maxN=place(es);
+  dayData.push({es,width:Math.max(maxN*SUBW,DAYMIN)});
+}
+
+const head=document.getElementById("head");
+let hh='<div class="cell corner"></div>';
+days.forEach((d,i)=>{hh+=`<div class="cell" style="width:${dayData[i].width}px">${d}${i===6?' <span class="wk">(SOMA / boathouse)</span>':''}</div>`;});
+head.innerHTML=hh;
+
+const body=document.getElementById("body");
+let g='<div class="gutter" style="height:'+H+'px">';
+for(let t=DAY_START;t<=DAY_END;t+=60){g+=`<div class="t" style="top:${yPos(t)}px">${String(t/60|0).padStart(2,"0")}:00</div>`;}
+g+="</div>";
+body.insertAdjacentHTML("beforeend",g);
+
+dayData.forEach(({es,width})=>{
+  const col=document.createElement("div");
+  col.className="day"; col.style.height=H+"px"; col.style.width=width+"px";
+  for(let t=DAY_START;t<=DAY_END;t+=30){
+    const hr=document.createElement("div");
+    hr.className="hr"+(t%60?" half":""); hr.style.top=yPos(t)+"px";
+    col.appendChild(hr);
+  }
+  es.forEach(o=>{
+    const e=o.raw, n=o.n||1, w=100/n, left=o.col*w;
+    const a=document.createElement("a");
+    a.className="ev "+e[5]+(e[7]==="★"?" star":"");
+    a.style.top=yPos(o.s)+"px";
+    a.style.height=Math.max((o.e-o.s)*PXMIN-2,16)+"px";
+    a.style.left="calc("+left+"% + 1px)";
+    a.style.width="calc("+w+"% - 2px)";
+    a.href="#";
+    a.title=e[4]+" — "+e[1]+"–"+e[2]+" — "+fmtLoc(e[6]);
+    a.innerHTML=`<span class="ti">${e[1]} ${e[3]}${e[7]==="◷"?' <span class="on">◷</span>':''}</span>`
+               +`<span class="pr">${e[4]}</span>`
+               +`<span class="loc">${fmtLoc(e[6])}</span>`;
+    a.addEventListener("click",ev2=>{ev2.preventDefault();openModal(e);});
+    col.appendChild(a);
+  });
+  body.appendChild(col);
+});
+
+// ---- popup ----
+const ov=document.getElementById("ov"), mbody=document.getElementById("mbody");
+function openModal(e){
+  const meta=META[e[4]]||{};
+  const gmaps=meta.gq?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(meta.gq)}`:null;
+  mbody.innerHTML=
+    `<span class="badge ${e[5]}">${e[5]==="g"?"Confirmed":"Verify first"}</span>`
+   +`<h2>${e[3]}</h2>`
+   +`<div class="row"><span class="lbl">When</span>${days[e[0]]} ${e[1]}–${e[2]}${e[7]==="◷"?" · online":""}</div>`
+   +`<div class="row"><span class="lbl">Studio</span>${e[4]}</div>`
+   +`<div class="row"><span class="lbl">Location</span>${fmtLoc(e[6])}${meta.addr?` — ${meta.addr}`:""}</div>`
+   +(meta.desc?`<div class="desc">${meta.desc}</div>`:"")
+   +`<div class="links">`
+     +(meta.site?`<a href="${meta.site}" target="_blank" rel="noopener">Studio website ↗</a>`:"")
+     +(gmaps?`<a href="${gmaps}" target="_blank" rel="noopener">Open in Google Maps ↗</a>`:"")
+   +`</div>`;
+  ov.classList.add("open");
+}
+function close(){ov.classList.remove("open");}
+document.getElementById("x").addEventListener("click",close);
+ov.addEventListener("click",e=>{if(e.target===ov)close();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")close();});
+</script>
+</body>
+</html>
